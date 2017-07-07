@@ -5,49 +5,63 @@ RSpec.describe IndexController, type: :controller do
   describe '#index' do
     render_views
 
-    context 'successful student lookup' do
+    before do
 
-      before do
-        Student.delete_all
+      Student.delete_all
 
-        first_student = Student.create(
-            name: 'Liam',
-            age: 5,
-            active: false
-        )
+      allow(Student)
+          .to receive(:all)
+                  .with(any_args)
+                  .and_return(
+                      [
+                          OpenStruct.new(
+                              name: 'Clark',
+                              age: 14
+                          ),
+                          OpenStruct.new(
+                              name: 'Ben',
+                              age: 12
+                          ),
+                          OpenStruct.new(
+                              name: 'Monica',
+                              age: 12
+                          )
+                      ]
+                  )
 
-        second_student = Student.create(
-            name: 'Peter',
-            age: 7,
-            active: true
-        )
-
-        get :index
-      end
-
-      it 'should return a status of 200' do
-        expect(response.status).to eq 200
-      end
-
-      it 'should render the student list header' do
-        expect(response.body).to have_content('Here Are The Students')
-      end
-
-      it 'should render the student names' do
-        expect(response.body).to have_content('Liam')
-        expect(response.body).to have_content('Peter')
-      end
-
-      it 'should render the student ages' do
-        expect(response.body).to have_content('5')
-        expect(response.body).to have_content('7')
-      end
-
+      get :index
     end
 
-    context 'unsuccessful student lookup' do
-
+    it 'should return a status of 200' do
+      expect(response.status).to eq 200
     end
+
+    it 'should render the student list header' do
+      expect(response.body).to have_content('Here Are The Students')
+    end
+
+    it 'should render the student names' do
+      expect(response.body).to have_content('Clark')
+      expect(response.body).to have_content('Ben')
+      expect(response.body).to have_content('Monica')
+    end
+
+    it 'should render the student ages' do
+      expect(response.body).to have_content('14')
+      expect(response.body).to have_content('12')
+      expect(response.body).to have_content('12')
+    end
+
+  end
+
+  describe '#add_two_numbers' do
+
+    it 'should return 4 for 2 + 2' do
+      sum = described_class.add_two_numbers(2, 2)
+
+      expect(sum).to eq 4
+    end
+
   end
 
 end

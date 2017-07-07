@@ -2,29 +2,60 @@ require 'rails_helper'
 
 RSpec.feature 'HomePages', type: :feature do
 
-  scenario 'when I successfully view the students' do
-    create_four_students_in_database
+  describe 'when viewing all of the users on the home page' do
+    before do
+      create_four_students_in_database
+    end
 
-    visit '/index/index'
-
-    given_i_am_on_the_home_page
-    when_i_view_the_student_list
-    then_i_should_see_the_list_of_students_by_name_and_age
+    it 'shows all of the users when the page loads' do
+      given_i_am_on_the_home_page
+      when_the_page_loads
+      then_i_should_see_all_of_the_students
+      and_i_should_see_the_list_of_students_by_name_and_age
+    end
   end
+
 
   private
 
-  def given_i_am_on_the_home_page
-    header = page.find_by_id('home-page-header')
-    expect(header).to be_truthy
+  def create_four_students_in_database
+    Student.delete_all
+
+    Student.create(
+        name: 'Josh',
+        age: 2
+    )
+
+    Student.create(
+        name: 'Ray',
+        age: 3
+    )
+
+    Student.create(
+        name: 'Rush',
+        age: 4
+    )
+
+    Student.create(
+        name: 'Felicia',
+        age: 5
+    )
   end
 
-  def when_i_view_the_student_list
+  def given_i_am_on_the_home_page
+    visit '/'
+  end
+
+  def when_the_page_loads
+    #   page should have already loaded at this point
+  end
+
+  def then_i_should_see_all_of_the_students
     student_list = page.find_by_id('student-list')
     expect(student_list).to be_truthy
   end
 
-  def then_i_should_see_the_list_of_students_by_name_and_age
+  def and_i_should_see_the_list_of_students_by_name_and_age
     student_elements = page.all('#student')
 
     expect(student_elements.size).to eq 4
@@ -36,34 +67,6 @@ RSpec.feature 'HomePages', type: :feature do
 
     first_student_age = first_student.find('#student-age').text
     expect(first_student_age).to eq '2'
-  end
-
-  def create_four_students_in_database
-    Student.delete_all
-
-    Student.create(
-      name: 'Josh',
-      age: 2,
-      active: true
-    )
-
-    Student.create(
-        name: 'Ray',
-        age: 3,
-        active: true
-    )
-
-    Student.create(
-        name: 'Rush',
-        age: 4,
-        active: true
-    )
-
-    Student.create(
-        name: 'Felicia',
-        age: 5,
-        active: true
-    )
   end
 
 end
